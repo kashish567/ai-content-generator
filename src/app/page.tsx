@@ -1,13 +1,11 @@
-import Image from "next/image";
-import {Button} from "@/components/ui/button"
+import Login from "@/components/Login";
+
 
 export default function Home() {
   return (
-   <div>
-    <h2>
-      Welcome!
-      </h2>
-      <Button > Hello</Button>
-    </div>
+  <div className="flex items-center flex-col justify-center m-4">
+    <h1 className="text-3xl my-3">Hey, Time to sign In</h1>
+    <Login/>
+  </div>
   );
 }
