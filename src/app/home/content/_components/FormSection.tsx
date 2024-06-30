@@ -8,16 +8,22 @@ import { Button } from "@/components/ui/button";
 
 interface PROPS {
   selectedTemplate?: Template;
+  userFormInput:any;
 }
 
-const FormSection = ({ selectedTemplate }: PROPS) => {
+const FormSection = ({ selectedTemplate,userFormInput }: PROPS) => {
 
-  const[formData,setFormData] = useState();
+  const[formData,setFormData] = useState<any>();
   const handleInputChange=(event:any)=>{
-
+    const {name,value} = event.target;
+    setFormData({
+      ...formData,
+      [name]:value
+    })
   }
   const onSubmit = (e: any) => {
     e.preventDefault();
+    userFormInput(formData);
   };
 
   return (
