@@ -9,18 +9,6 @@ export default [
     slug: "generate-blog-title",
     form: [
       {
-        label: "Enter your nlog niche",
-        field: "input",
-        name: "niche",
-        required: true,
-      },
-      {
-        label: "Enter your blog topic",
-        field: "textarea",
-        name: "outline",
-        required: true,
-      },
-      {
         label: "Enter your blog topic",
         field: "input",
         name: "topic",
