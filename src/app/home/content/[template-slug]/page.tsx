@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { chatSession } from "../../../../../utils/AiModel";
+import dbConnection from "../../../../../utils/db";
+import AiOutput from "../../../../../utils/schema";
+import { storeSchema } from "../../../../../utils/responseStore";
 
 interface PROPS {
   params: {
@@ -20,7 +23,8 @@ function CreateNewContent({ params }: PROPS) {
     (item) => item.slug === params["template-slug"]
   );
   const [loading, setLoading] = useState(false);
-  const [aiOutput, setAiOutput] = useState<string>('');
+  const [aiOutput, setAiOutput] = useState<string>("");
+  // const {user} = useU adding the emial of user
 
   const GenerateAiContent = async (formData: any) => {
     setLoading(true);
@@ -30,10 +34,25 @@ function CreateNewContent({ params }: PROPS) {
 
     const result = await chatSession.sendMessage(FinalAiPrompt);
 
-    console.log(result.response.text());
+    // console.log(result.response.text());
     setAiOutput(result?.response.text());
+    // console.log(formData);
+    await storeSchema(formData, result?.response.text());
+    // await SaveinDb(formData, selectedTemplate?.slug, result?.response.text());
     setLoading(false);
   };
+
+  // const SaveinDb = async (formData: any, slug: any, aiResp: string) => {
+  //   const result = await db.insert(AiOutput).values({
+  //     formData: formData,
+  //     templateSlug: slug,
+  //     aiResponse: aiResp,
+  //     // createdBy:
+  //     // createdAt: new Date()
+  //   });
+
+  //   console.log(result);
+  // };
 
   return (
     <div className="p-10">
