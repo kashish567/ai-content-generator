@@ -5,22 +5,23 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Loader2Icon } from "lucide-react";
 
 interface PROPS {
   selectedTemplate?: Template;
-  userFormInput:any;
+  userFormInput: any;
+  loading: boolean;
 }
 
-const FormSection = ({ selectedTemplate,userFormInput }: PROPS) => {
-
-  const[formData,setFormData] = useState<any>();
-  const handleInputChange=(event:any)=>{
-    const {name,value} = event.target;
+const FormSection = ({ selectedTemplate, userFormInput, loading }: PROPS) => {
+  const [formData, setFormData] = useState<any>();
+  const handleInputChange = (event: any) => {
+    const { name, value } = event.target;
     setFormData({
       ...formData,
-      [name]:value
-    })
-  }
+      [name]: value,
+    });
+  };
   const onSubmit = (e: any) => {
     e.preventDefault();
     userFormInput(formData);
@@ -40,15 +41,22 @@ const FormSection = ({ selectedTemplate,userFormInput }: PROPS) => {
           <div className="my-2 flex flex-col gap-2 mb-7">
             <label className="font-bold">{item.label}</label>
             {item.field == "input" ? (
-              <Input name={item.name} required={item?.required} 
-              onChange={handleInputChange}/>
+              <Input
+                name={item.name}
+                required={item?.required}
+                onChange={handleInputChange}
+              />
             ) : item.field == "textarea" ? (
-              <Textarea name={item.name} required={item?.required} 
-              onChange={handleInputChange} />
+              <Textarea
+                name={item.name}
+                required={item?.required}
+                onChange={handleInputChange}
+              />
             ) : null}
           </div>
         ))}
-        <Button type="submit" className="w-full py-6">
+        <Button type="submit" className="w-full py-6" disabled={loading}>
+          {loading && <Loader2Icon className="animate-spin" />}
           Generate content
         </Button>
       </form>
