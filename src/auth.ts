@@ -4,6 +4,8 @@ import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { getUserByEmail  } from "./data/user"
+import dbConnection from "../utils/db";
+import User from "../utils/userSchema";
 
 export const {
     handlers: { GET, POST },
@@ -58,4 +60,50 @@ export const {
             },
         }),
     ],
+     callbacks: {
+        async session({session}:{session:any}) {
+            try {
+                await dbConnection();
+                if(session.user){
+                    const user = await User.findOne({email:session.user.email});
+                    if(user){
+                        session.user._id = user._id;
+                        return session;
+                    }
+                    else{ 
+                        console.log("User not found")
+                    }
+                }else{
+                    console.log("Invalid Session :")
+                }
+                
+            } catch (error) {
+                console.log(error);
+                throw error;   
+            }
+            
+        },
+        async signIn({ account, profile }) {
+            if (account?.provider === 'github') {
+                await dbConnection;
+                try {
+                    const user = await User.findOne({email:profile?.email!});
+                    if (!user) {
+                        const newUser = await User.create({
+                            username: profile?.login,
+                            fullname: profile?.name,
+                            email: profile?.email,
+                            profilePhoto: profile?.avatar_url
+                        });
+                        await newUser.save();
+                    }
+                    return true;
+                } catch (error) {
+                    console.log(error);
+                    return false;
+                }
+            }
+            return false;
+        }
+    }
 });
