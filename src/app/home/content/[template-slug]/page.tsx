@@ -36,8 +36,13 @@ function CreateNewContent({ params }: PROPS) {
 
     // console.log(result.response.text());
     setAiOutput(result?.response.text());
+    console.log(params["template-slug"]);
     // console.log(formData);
-    await storeSchema(formData, result?.response.text());
+    await storeSchema(
+      formData,
+      result?.response.text(),
+      params["template-slug"]
+    );
     // await SaveinDb(formData, selectedTemplate?.slug, result?.response.text());
     setLoading(false);
   };

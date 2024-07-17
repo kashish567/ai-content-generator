@@ -1,16 +1,24 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const aiOutputSchema = new mongoose.Schema({
-  formData: {
-    type: Map,
-    of: String,
-    required: true
+const aiOutputSchema = new mongoose.Schema(
+  {
+    formData: {
+      type: Map,
+      of: String,
+      required: true,
+    },
+    aiResponse: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
   },
-  aiResponse: {
-    type: String,
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-const AiOutput = mongoose.models.AiOutput || mongoose.model('AiOutput', aiOutputSchema);
+const AiOutput =
+  mongoose.models.GeneratedData ||
+  mongoose.model("GeneratedData", aiOutputSchema);
 
 export default AiOutput;
