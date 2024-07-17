@@ -20,10 +20,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    history: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "GeneratedData",
-    },
+    history: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "GeneratedData",
+      },
+    ],
   },
   { timestamps: true }
 );

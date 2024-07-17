@@ -13,7 +13,10 @@ const aiOutputSchema = new mongoose.Schema(
     name: {
       type: String,
     },
-    
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import FormSection from "../_components/FormSection";
 import OutputSection from "../_components/OutputSection";
 import { Template } from "../../_components/TemplateListSection";
@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { chatSession } from "../../../../../utils/AiModel";
-import dbConnection from "../../../../../utils/db";
-import AiOutput from "../../../../../utils/schema";
 import { storeSchema } from "../../../../../utils/responseStore";
+import { auth } from "@/auth";
 
 interface PROPS {
   params: {
@@ -18,46 +17,51 @@ interface PROPS {
   };
 }
 
-function CreateNewContent({ params }: PROPS) {
+const CreateNewContent = ({ params }: PROPS) => {
+  const [loading, setLoading] = useState(false);
+  const [aiOutput, setAiOutput] = useState<string>("");
+  const [authUser, setAuthUser] = useState<any>(null);
+
   const selectedTemplate: Template | undefined = Templates?.find(
     (item) => item.slug === params["template-slug"]
   );
-  const [loading, setLoading] = useState(false);
-  const [aiOutput, setAiOutput] = useState<string>("");
-  // const {user} = useU adding the emial of user
 
-  const GenerateAiContent = async (formData: any) => {
-    setLoading(true);
-    const SelectedPrompt = selectedTemplate?.aiPrompt;
+  useEffect(() => {
+    const fetchAuthUser = async () => {
+      const user = await auth();
+      setAuthUser(user);
+    };
 
-    const FinalAiPrompt = JSON.stringify(formData) + ", " + SelectedPrompt;
+    fetchAuthUser();
+  }, []);
 
-    const result = await chatSession.sendMessage(FinalAiPrompt);
+  const GenerateAiContent = useCallback(
+    async (formData: any) => {
+      setLoading(true);
+      const SelectedPrompt = selectedTemplate?.aiPrompt;
 
-    // console.log(result.response.text());
-    setAiOutput(result?.response.text());
-    console.log(params["template-slug"]);
-    // console.log(formData);
-    await storeSchema(
-      formData,
-      result?.response.text(),
-      params["template-slug"]
-    );
-    // await SaveinDb(formData, selectedTemplate?.slug, result?.response.text());
-    setLoading(false);
-  };
+      const FinalAiPrompt = JSON.stringify(formData) + ", " + SelectedPrompt;
 
-  // const SaveinDb = async (formData: any, slug: any, aiResp: string) => {
-  //   const result = await db.insert(AiOutput).values({
-  //     formData: formData,
-  //     templateSlug: slug,
-  //     aiResponse: aiResp,
-  //     // createdBy:
-  //     // createdAt: new Date()
-  //   });
+      try {
+        const result = await chatSession.sendMessage(FinalAiPrompt);
 
-  //   console.log(result);
-  // };
+        const responseText = await result?.response.text();
+        setAiOutput(responseText);
+
+        await storeSchema(
+          formData,
+          responseText,
+          params["template-slug"],
+          authUser?.user?._id
+        );
+      } catch (error) {
+        console.error("Error generating AI content:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [authUser, params["template-slug"], selectedTemplate]
+  );
 
   return (
     <div className="p-10">
@@ -81,6 +85,6 @@ function CreateNewContent({ params }: PROPS) {
       </div>
     </div>
   );
-}
+};
 
 export default CreateNewContent;
