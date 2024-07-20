@@ -20,20 +20,14 @@ interface PROPS {
 const CreateNewContent = ({ params }: PROPS) => {
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>("");
-  const [authUser, setAuthUser] = useState<any>(null);
 
   const selectedTemplate: Template | undefined = Templates?.find(
     (item) => item.slug === params["template-slug"]
   );
 
-  useEffect(() => {
-    const fetchAuthUser = async () => {
-      const user = await auth();
-      setAuthUser(user);
-    };
+  
 
-    fetchAuthUser();
-  }, []);
+  
 
   const GenerateAiContent = useCallback(
     async (formData: any) => {
@@ -52,7 +46,6 @@ const CreateNewContent = ({ params }: PROPS) => {
           formData,
           responseText,
           params["template-slug"],
-          authUser?.user?._id
         );
       } catch (error) {
         console.error("Error generating AI content:", error);
@@ -60,7 +53,7 @@ const CreateNewContent = ({ params }: PROPS) => {
         setLoading(false);
       }
     },
-    [authUser, params["template-slug"], selectedTemplate]
+    [ params["template-slug"], selectedTemplate]
   );
 
   return (
