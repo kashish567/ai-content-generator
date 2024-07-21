@@ -21,8 +21,6 @@ const aiOutputSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const AiOutput =
-  mongoose.models.GeneratedData ||
-  mongoose.model("GeneratedData", aiOutputSchema);
+const AiOutput = mongoose?.models?.AiOutput || mongoose.model("AiOutput", aiOutputSchema);
 
 export default AiOutput;

@@ -20,7 +20,9 @@ export const GET = async (req: NextRequest) => {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ data: data }, { status: 200 });
+    const historyLength = data.history.length;
+
+    return NextResponse.json({ data: data, historyLength: historyLength }, { status: 200 });
   } catch (error: any) {
     console.error("Error fetching user data:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });

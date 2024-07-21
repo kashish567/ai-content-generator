@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     history: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "GeneratedData",
+        ref: "AiOutput",
       },
     ],
   },
