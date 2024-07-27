@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import FormSection from "../_components/FormSection";
 import OutputSection from "../_components/OutputSection";
 import { Template } from "../../_components/TemplateListSection";
@@ -10,6 +10,8 @@ import Link from "next/link";
 import { chatSession } from "../../../../../utils/AiModel";
 import { storeSchema } from "../../../../../utils/responseStore";
 import { auth } from "@/auth";
+import { TotalUsageContext } from "@/app/(context)/TotalUsageContext";
+import { useRouter } from "next/navigation";
 
 interface PROPS {
   params: {
@@ -20,17 +22,20 @@ interface PROPS {
 const CreateNewContent = ({ params }: PROPS) => {
   const [loading, setLoading] = useState(false);
   const [aiOutput, setAiOutput] = useState<string>("");
+  const { usage, setUsage } = useContext(TotalUsageContext);
+  const router = useRouter();
 
   const selectedTemplate: Template | undefined = Templates?.find(
     (item) => item.slug === params["template-slug"]
   );
 
-  
-
-  
-
   const GenerateAiContent = useCallback(
     async (formData: any) => {
+      if (usage >= 20) {
+        console.log("please upgrade");
+        router.push("home/billing");
+        return;
+      }
       setLoading(true);
       const SelectedPrompt = selectedTemplate?.aiPrompt;
 
@@ -42,18 +47,14 @@ const CreateNewContent = ({ params }: PROPS) => {
         const responseText = await result?.response.text();
         setAiOutput(responseText);
 
-        await storeSchema(
-          formData,
-          responseText,
-          params["template-slug"],
-        );
+        await storeSchema(formData, responseText, params["template-slug"]);
       } catch (error) {
         console.error("Error generating AI content:", error);
       } finally {
         setLoading(false);
       }
     },
-    [ params["template-slug"], selectedTemplate]
+    [params["template-slug"], selectedTemplate]
   );
 
   return (

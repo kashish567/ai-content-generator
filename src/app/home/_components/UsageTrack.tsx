@@ -1,21 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { TotalUsageContext } from "@/app/(context)/TotalUsageContext";
 
 const UsageTrack = () => {
-  const [usage, setUsage] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(20); // Set your total credits here
+  const { usage, setUsage } = useContext(TotalUsageContext);
+  const [totalCredits, setTotalCredits] = useState(20);
   const [usedCredits, setUsedCredits] = useState(0);
 
   useEffect(() => {
     const fetchUsageData = async () => {
       try {
-        const response = await axios.get("/api/aicount"); // Adjust the endpoint as necessary
+        const response = await axios.get("/api/aicount");
         const data = response.data;
 
         if (response) {
-          const used = data.historyLength; // Assuming historyLength is used as credits
+          const used = data.historyLength;
           setUsedCredits(used);
           setUsage((used / totalCredits) * 100);
         } else {
