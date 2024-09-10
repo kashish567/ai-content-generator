@@ -2,7 +2,6 @@
 
 import React,{useState} from "react";
 import SocailLogin from "./SocialLogin"
-// import { doSocialLogin } from "@/app/actions";/
 import { doCredentialsLogin } from "@/app/actions"
 import { useRouter } from "next/navigation";
 
